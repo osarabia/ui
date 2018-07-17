@@ -25,7 +25,7 @@ export default new Router({
       name: 'Gastos',
       component: Gastos,
       beforeEnter (to, from, next) {
-        if (!store.getters.isAuthenticated) {
+        if (!store.getters.isAuthenticated()) {
           next('/login')
         } else {
           next()

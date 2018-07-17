@@ -182,34 +182,51 @@ export default {
       if (this.file !== '') {
         let formData = new FormData()
         formData.append('document', this.file)
-        this.$store.dispatch('upload', formData)
+        this.doRequest('upload', formData)
           .then(() => {
             this.closeImport()
+          }, (_) => {
+            console.log('error')
           })
       }
     },
     handleFileUpload () {
       this.file = this.$refs.file.files[0]
     },
+    doRequest (action, params) {
+      if (this.$store.getters.isAuthenticated()) {
+        return this.$store.dispatch(action, params)
+      }
+
+      this.$router.push('/login')
+
+      return Promise.reject(new Error('Token Expired'))
+    },
     createResource () {
       let data = {'fecha': this.newDate, 'concepto': this.newConcept, 'cantidad': this.newQuantity}
-      this.$store.dispatch('create', data)
+      this.doRequest('create', data)
         .then(() => {
           this.closeAdd()
           this.listResources()
+        }, (_) => {
+          console.log('Token Expired')
         })
     },
     listResources () {
-      this.$store.dispatch('list', {})
+      this.doRequest('list', {})
         .then((resp) => {
           this.records = resp.data
+        }, (_) => {
+          console.log('error')
         })
     },
     deleteResource () {
-      this.$store.dispatch('delete', this.recordToEliminate.id)
+      this.doRequest('delete', this.recordToEliminate.id)
         .then(() => {
           this.$delete(this.records, this.indexToEliminate)
           this.closeDelete()
+        }, (_) => {
+          console.log('error')
         })
     },
     reload () {
@@ -248,9 +265,11 @@ export default {
         params['cantidad'] = this.searchValue
       }
 
-      this.$store.dispatch('list', params)
+      this.doRequest('list', params)
         .then((resp) => {
           this.records = resp.data
+        }, (_) => {
+          console.log('Error')
         })
     },
     sortByDate () {

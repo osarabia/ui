@@ -209,7 +209,7 @@ export default {
           this.closeAdd()
           this.listResources()
         }, (_) => {
-          console.log('Token Expired')
+          console.log('error')
         })
     },
     listResources () {

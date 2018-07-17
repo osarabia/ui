@@ -62,7 +62,7 @@ const mutations = {
 }
 
 const getters = {
-  isAuthenticated (state) {
+  isAuthenticated: state => () => {
     return isValidJwt(state.jwt.token)
   }
 }
